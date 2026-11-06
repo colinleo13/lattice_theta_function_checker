@@ -1,7 +1,8 @@
 #include "ThetaFunctionChecker.hpp"
+#include <iostream>
 
 
-ThetaFunctionChecker::ThetaFunctionChecker(int num_cols_in, int min_coefficent_in, int max_coefficient_in, std::vector<std::vector<int>> lattice_1_in, std::vector<std::vector<int>> lattice_2_in){
+ThetaFunctionChecker::ThetaFunctionChecker(int num_cols_in, int min_coefficent_in, int max_coefficient_in, std::vector<std::vector<int> > lattice_1_in, std::vector<std::vector<int> > lattice_2_in){
     min_coefficient = min_coefficent_in;
     max_coefficient = max_coefficient_in;
     lattice_1 = lattice_1_in;
@@ -34,5 +35,29 @@ void ThetaFunctionChecker::compute_norms(){ //hard code for 4 for now?
         }
     }
 
+}
+
+void ThetaFunctionChecker::output_results(){
+    for(auto it = lattice_1_norms.begin(); it != lattice_1_norms.end(); ++it){
+        std::cout << "Norm: " << it ->first << " Count: " << it -> second << "\n";
+    }
+}
+
+int main(){
+    std::vector<std::vector<int> > lattice1;
+    std::vector<std::vector<int> > lattice2;
+    for(int i = 0; i < 4; ++i){
+        std::vector<int> row1(4);
+        std::vector<int> row2(4);
+        lattice1.push_back(row1);
+        lattice2.push_back(row2);
+    }
+    lattice1[0][0] = 1;
+    lattice1[1][1] = 1;
+    lattice1[2][2] = 1;
+    lattice1[3][3] = 1;
+    ThetaFunctionChecker tfc(4, 0, 4, lattice1, lattice2);
+    tfc.compute_norms();
+    tfc.output_results();
 }
 
