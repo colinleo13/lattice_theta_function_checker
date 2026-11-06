@@ -11,34 +11,47 @@ ThetaFunctionChecker::ThetaFunctionChecker(int num_cols_in, int min_coefficent_i
 }
 
 void ThetaFunctionChecker::compute_norms(){ //hard code for 4 for now?
-    for(int i = min_coefficient; i < max_coefficient + 1; ++i){
-        for(int j = min_coefficient; j < max_coefficient + 1; ++j){
-            for(int k = min_coefficient; k < max_coefficient + 1; ++k){
-                for(int h = min_coefficient; h < max_coefficient + 1; ++h){
-                    std::vector<int> curr_vector(4);
-                    for(int row = 0; row < 4; ++row){
-                       curr_vector[row] = (i * lattice_1[row][0]) + (j * lattice_1[row][1]) + (k * lattice_1[row][2]) + (h * lattice_1[row][3]); 
+    std::vector<std::vector<int> >* curr_lattice = &lattice_1;
+    std::unordered_map<uint64_t, uint64_t>* curr_lattice_norms = &lattice_1_norms;
+    for(int twice = 0; twice < 2; ++twice){
+        for(int i = min_coefficient; i < max_coefficient + 1; ++i){
+            for(int j = min_coefficient; j < max_coefficient + 1; ++j){
+                for(int k = min_coefficient; k < max_coefficient + 1; ++k){
+                    for(int h = min_coefficient; h < max_coefficient + 1; ++h){
+                        std::vector<int> curr_vector(4);
+                        for(int row = 0; row < 4; ++row){
+                        curr_vector[row] = (i * (*curr_lattice)[row][0]) + (j * (*curr_lattice)[row][1]) + (k * (*curr_lattice)[row][2]) + (h * (*curr_lattice)[row][3]); 
+                        }
+                        uint64_t norm_out = 0;
+                        for(int row = 0; row < 4; ++row){
+                            norm_out = norm_out + (curr_vector[row] * curr_vector[row]);
+                        }
+                        auto it = (*curr_lattice_norms).find(norm_out);
+                        if(it != (*curr_lattice_norms).end()){
+                            (it -> second)++; //sketchy
+                        } else{
+                            (*curr_lattice_norms)[norm_out] = 1;
+                        }
+                        
                     }
-                    uint64_t norm_out = 0;
-                    for(int row = 0; row < 4; ++row){
-                        norm_out = norm_out + (curr_vector[row] * curr_vector[row]);
-                    }
-                    auto it = lattice_1_norms.find(norm_out);
-                    if(it != lattice_1_norms.end()){
-                        (it -> second)++; //sketchy
-                    } else{
-                        lattice_1_norms[norm_out] = 1;
-                    }
-                       
                 }
             }
         }
+        curr_lattice = &lattice_2;
+        curr_lattice_norms = &lattice_2_norms;
     }
-
 }
 
 void ThetaFunctionChecker::output_results(){
+    std::cout << "Lattice 1:\n";
     for(auto it = lattice_1_norms.begin(); it != lattice_1_norms.end(); ++it){
+        std::cout << "Norm: " << it ->first << " Count: " << it -> second << "\n";
+    }
+
+    std::cout << "\n\n\n";
+
+    std::cout << "Lattice 2:\n";
+    for(auto it = lattice_2_norms.begin(); it != lattice_2_norms.end(); ++it){
         std::cout << "Norm: " << it ->first << " Count: " << it -> second << "\n";
     }
 }
